@@ -1,0 +1,747 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:," />
+    <title>StatusHD — Prototype Web</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --bg: #f4f6f5;
+        --surface: #ffffff;
+        --surface-2: #eef2f0;
+        --ink: #12211b;
+        --ink-2: #4b5d55;
+        --ink-3: #7d8f87;
+        --line: #dde5e1;
+        --green: #1faa59;
+        --green-dark: #128c4b;
+        --green-soft: #e3f6ec;
+        --wa: #25d366;
+        --amber: #b7791f;
+        --amber-soft: #fdf3e0;
+        --red: #c0392b;
+        --radius: 18px;
+        --shadow: 0 10px 30px rgba(18, 33, 27, .08);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0c1512;
+          --surface: #15211c;
+          --surface-2: #1c2b24;
+          --ink: #eef5f1;
+          --ink-2: #a9bcb2;
+          --ink-3: #71857b;
+          --line: #26382f;
+          --green-soft: #123526;
+          --amber-soft: #33270f;
+          --shadow: 0 10px 30px rgba(0, 0, 0, .35);
+        }
+      }
+      * { box-sizing: border-box; }
+      html { -webkit-text-size-adjust: 100%; }
+      body {
+        margin: 0;
+        font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        line-height: 1.5;
+      }
+      .wrap { max-width: 560px; margin: 0 auto; padding: 20px 16px 56px; }
+
+      /* ---------- header ---------- */
+      .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+      .brand-mark {
+        width: 44px; height: 44px; border-radius: 12px; flex: none;
+        background: var(--green); color: #fff;
+        display: grid; place-items: center;
+        font-weight: 800; font-size: 13px; letter-spacing: .02em; line-height: 1.05; text-align: center;
+      }
+      .brand h1 { font-size: 22px; margin: 0; font-weight: 800; letter-spacing: -.01em; }
+      .brand p { margin: 0; font-size: 13px; color: var(--ink-2); }
+      .lede { font-size: 15px; color: var(--ink-2); margin: 14px 0 20px; }
+      .lede strong { color: var(--ink); }
+
+      /* ---------- steps ---------- */
+      .steps { display: flex; gap: 6px; margin-bottom: 20px; }
+      .step {
+        flex: 1; display: flex; align-items: center; gap: 7px;
+        padding: 8px 10px; border-radius: 999px;
+        background: var(--surface); border: 1px solid var(--line);
+        font-size: 12px; font-weight: 600; color: var(--ink-3);
+        white-space: nowrap; overflow: hidden;
+      }
+      .step .n {
+        width: 20px; height: 20px; border-radius: 50%; flex: none;
+        background: var(--surface-2); color: var(--ink-2);
+        display: grid; place-items: center; font-size: 11px; font-weight: 800;
+      }
+      .step.on { color: var(--ink); border-color: var(--green); }
+      .step.on .n { background: var(--green); color: #fff; }
+      .step.done { color: var(--green-dark); }
+      .step.done .n { background: var(--green-soft); color: var(--green-dark); }
+      @media (max-width: 480px) {
+        .steps { display: grid; grid-template-columns: 1fr 1fr; }
+        .step { justify-content: flex-start; }
+      }
+
+      .card {
+        background: var(--surface); border: 1px solid var(--line);
+        border-radius: var(--radius); box-shadow: var(--shadow);
+        padding: 18px; margin-bottom: 16px;
+      }
+      .card h2 { font-size: 16px; margin: 0 0 4px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+      .card .sub { font-size: 13px; color: var(--ink-2); margin: 0 0 14px; }
+      .hidden { display: none !important; }
+
+      /* ---------- dropzone ---------- */
+      .drop {
+        display: block;
+        border: 2px dashed var(--line); border-radius: 14px;
+        padding: 30px 18px; text-align: center; cursor: pointer;
+        transition: border-color .15s, background .15s;
+      }
+      .drop:hover, .drop.drag { border-color: var(--green); background: var(--green-soft); }
+      .drop .ic {
+        width: 52px; height: 52px; margin: 0 auto 10px; border-radius: 50%;
+        background: var(--green-soft); color: var(--green-dark);
+        display: grid; place-items: center;
+      }
+      .drop p { margin: 0; font-weight: 700; font-size: 15px; }
+      .drop small { color: var(--ink-3); font-size: 12.5px; }
+      input[type="file"] { display: none; }
+
+      .meta-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 14px; }
+      .meta-grid .m { background: var(--surface-2); border-radius: 12px; padding: 10px 12px; }
+      .meta-grid .m b { display: block; font-size: 14px; }
+      .meta-grid .m span { font-size: 11.5px; color: var(--ink-3); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+
+      /* ---------- preview ---------- */
+      .stage { position: relative; border-radius: 14px; overflow: hidden; background: #000; }
+      .stage video { display: block; width: 100%; max-height: 420px; background: #000; }
+      .overlay-text {
+        position: absolute; left: 50%; bottom: 12%; transform: translateX(-50%);
+        max-width: 88%; text-align: center; color: #fff; font-weight: 800; font-size: 20px;
+        text-shadow: 0 2px 10px rgba(0,0,0,.75), 0 0 2px rgba(0,0,0,.9);
+        pointer-events: none; word-break: break-word;
+      }
+      .stage .seg-badge {
+        position: absolute; top: 10px; left: 10px;
+        background: rgba(0,0,0,.65); color: #fff; font-size: 12px; font-weight: 700;
+        padding: 4px 10px; border-radius: 999px;
+      }
+      .filmstrip { display: flex; gap: 4px; margin-top: 12px; }
+      .filmstrip canvas { flex: 1; width: 0; height: 44px; object-fit: cover; border-radius: 6px; background: var(--surface-2); }
+
+      /* ---------- trim ---------- */
+      .trim-times { display: flex; justify-content: space-between; align-items: baseline; margin: 14px 0 2px; }
+      .trim-times .t { font-variant-numeric: tabular-nums; font-weight: 800; font-size: 15px; }
+      .trim-times .dur { color: var(--ink-2); font-size: 13px; font-weight: 600; }
+      .slider-row { display: grid; grid-template-columns: 64px 1fr 52px; align-items: center; gap: 10px; margin-top: 10px; }
+      .slider-row label { font-size: 12.5px; font-weight: 700; color: var(--ink-2); }
+      .slider-row output { font-variant-numeric: tabular-nums; font-size: 13px; font-weight: 700; text-align: right; }
+      input[type="range"] { width: 100%; accent-color: var(--green); height: 28px; }
+
+      .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+      .chip {
+        border: 1.5px solid var(--line); background: var(--surface);
+        border-radius: 12px; padding: 9px 14px; cursor: pointer;
+        font: inherit; font-size: 13.5px; font-weight: 700; color: var(--ink-2);
+        display: inline-flex; align-items: center; gap: 7px;
+      }
+      .chip small { font-weight: 600; font-size: 11px; padding: 2px 7px; border-radius: 999px; background: var(--surface-2); color: var(--ink-3); }
+      .chip.sel { border-color: var(--green); color: var(--ink); background: var(--green-soft); }
+      .chip.sel small { background: var(--green); color: #fff; }
+      .field-label { font-size: 12.5px; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; color: var(--ink-3); margin: 18px 0 8px; }
+      .field-label:first-of-type { margin-top: 4px; }
+
+      .toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0 2px; }
+      .toggle-row .tt b { display: block; font-size: 14.5px; }
+      .toggle-row .tt span { font-size: 12.5px; color: var(--ink-2); }
+      .switch { position: relative; width: 50px; height: 29px; flex: none; }
+      .switch input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+      .switch .track { position: absolute; inset: 0; border-radius: 999px; background: var(--line); transition: background .15s; pointer-events: none; }
+      .switch .track::after {
+        content: ""; position: absolute; top: 3px; left: 3px; width: 23px; height: 23px;
+        border-radius: 50%; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.25); transition: left .15s;
+      }
+      .switch input:checked + .track { background: var(--green); }
+      .switch input:checked + .track::after { left: 24px; }
+
+      .textin {
+        width: 100%; font: inherit; font-size: 14.5px; padding: 11px 13px;
+        border: 1.5px solid var(--line); border-radius: 12px; background: var(--surface);
+        color: var(--ink);
+      }
+      .textin:focus { outline: none; border-color: var(--green); }
+
+      /* ---------- buttons ---------- */
+      .btn {
+        display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+        font: inherit; font-weight: 800; font-size: 15.5px; cursor: pointer;
+        border: none; border-radius: 14px; padding: 14px 20px; width: 100%;
+        transition: transform .08s, opacity .15s;
+      }
+      .btn:active { transform: scale(.985); }
+      .btn:disabled { opacity: .45; cursor: not-allowed; }
+      .btn-primary { background: var(--green); color: #fff; }
+      .btn-wa { background: var(--wa); color: #06330f; }
+      .btn-ghost { background: var(--surface-2); color: var(--ink); }
+      .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+      .btn svg { flex: none; }
+
+      /* ---------- progress ---------- */
+      .bar { height: 10px; border-radius: 999px; background: var(--surface-2); overflow: hidden; margin: 14px 0 8px; }
+      .bar i { display: block; height: 100%; width: 0%; background: var(--green); border-radius: 999px; transition: width .25s ease; }
+      .prog-note { font-size: 13px; color: var(--ink-2); margin: 0; min-height: 20px; }
+
+      /* ---------- result ---------- */
+      .compare { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 6px; }
+      .compare th, .compare td { padding: 9px 6px; text-align: left; border-bottom: 1px solid var(--line); }
+      .compare th { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--ink-3); }
+      .compare td.num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+      .compare td.after { color: var(--green-dark); font-weight: 800; }
+      .saved-pill {
+        display: inline-block; margin-top: 12px; background: var(--green-soft); color: var(--green-dark);
+        font-weight: 800; font-size: 13.5px; padding: 6px 12px; border-radius: 999px;
+      }
+      .note {
+        background: var(--amber-soft); color: var(--ink); border-radius: 12px;
+        padding: 12px 14px; font-size: 13.5px; margin-top: 14px;
+      }
+      .note b { color: var(--amber); }
+      .ok-banner {
+        display: flex; gap: 10px; align-items: center;
+        background: var(--green-soft); color: var(--green-dark);
+        border-radius: 12px; padding: 12px 14px; font-weight: 700; font-size: 14.5px; margin-bottom: 14px;
+      }
+
+      /* ---------- panduan cadangan ---------- */
+      .wa-guide {
+        margin-top: 14px; border: 1.5px solid var(--green); border-radius: 14px;
+        background: var(--green-soft); padding: 14px;
+      }
+      .wa-guide h3 { margin: 0 0 4px; font-size: 14.5px; display: flex; align-items: center; gap: 8px; }
+      .wa-guide p { margin: 0 0 12px; font-size: 13px; color: var(--ink-2); }
+      .wa-guide ol { list-style: none; counter-reset: wg; margin: 0; padding: 0; display: grid; gap: 10px; }
+      .wa-guide li {
+        counter-increment: wg; display: flex; gap: 10px; align-items: flex-start;
+        font-size: 14px; line-height: 1.45;
+      }
+      .wa-guide li::before {
+        content: counter(wg); flex: none; width: 24px; height: 24px; border-radius: 50%;
+        background: var(--green); color: #fff; font-size: 13px; font-weight: 800;
+        display: grid; place-items: center; margin-top: 1px;
+      }
+      .wa-guide li b { font-weight: 800; }
+      .wa-guide .fname { font-weight: 800; color: var(--green-dark); word-break: break-all; }
+
+      /* ---------- routes ---------- */
+      .routes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+      @media (max-width: 480px) { .routes { grid-template-columns: 1fr; } }
+      .route { border: 1.5px solid var(--line); border-radius: 14px; padding: 14px; }
+      .route.best { border-color: var(--green); background: var(--green-soft); }
+      .route h3 { margin: 0 0 6px; font-size: 14.5px; display: flex; align-items: center; gap: 7px; }
+      .route p { margin: 0; font-size: 13px; color: var(--ink-2); }
+      .route .tag { font-size: 10.5px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; background: var(--green); color: #fff; padding: 2px 8px; border-radius: 999px; }
+
+      footer { text-align: center; color: var(--ink-3); font-size: 12.5px; margin-top: 26px; }
+      .toast {
+        position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%) translateY(20px);
+        background: var(--ink); color: var(--bg); font-size: 13.5px; font-weight: 600;
+        padding: 11px 18px; border-radius: 999px; opacity: 0; pointer-events: none;
+        transition: opacity .2s, transform .2s; max-width: calc(100vw - 32px); text-align: center; z-index: 50;
+      }
+      .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="brand">
+        <div class="brand-mark">FULL<br />HD</div>
+        <div>
+          <h1>StatusHD</h1>
+          <p>Prototype web — kompres video untuk Status WA</p>
+        </div>
+      </div>
+      <p class="lede">
+        Pilih video HD dari galeri, potong bagian terbaiknya, optimalkan untuk WhatsApp,
+        lalu <strong>kirim langsung ke Status WA</strong> — tanpa kode akses, tanpa antre bot.
+        Semua proses berjalan di HP kamu; video tidak di-upload ke server mana pun.
+      </p>
+
+      <div class="steps" id="steps">
+        <div class="step on" data-step="1"><span class="n">1</span><span class="lbl">Pilih video</span></div>
+        <div class="step" data-step="2"><span class="n">2</span><span class="lbl">Potong</span></div>
+        <div class="step" data-step="3"><span class="n">3</span><span class="lbl">Optimalkan</span></div>
+        <div class="step" data-step="4"><span class="n">4</span><span class="lbl">Kirim</span></div>
+      </div>
+
+      <!-- LANGKAH 1: PILIH -->
+      <section class="card" id="card-pick">
+        <h2>Pilih video dari galeri</h2>
+        <p class="sub">Video asli yang sudah HD hasilnya paling bagus. Video yang pernah dibagikan ulang biasanya sudah turun kualitasnya.</p>
+        <label class="drop" id="drop">
+          <span class="ic">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2"/></svg>
+          </span>
+          <p>Ketuk untuk memilih video</p>
+          <small>MP4, MOV, WebM — dari galeri atau file manager</small>
+          <input type="file" id="file" accept="video/*" />
+        </label>
+        <div class="meta-grid hidden" id="meta">
+          <div class="m"><span>Ukuran asli</span><b id="m-size">—</b></div>
+          <div class="m"><span>Resolusi</span><b id="m-res">—</b></div>
+          <div class="m"><span>Durasi</span><b id="m-dur">—</b></div>
+        </div>
+      </section>
+
+      <!-- LANGKAH 2: POTONG & EDIT -->
+      <section class="card hidden" id="card-edit">
+        <h2>Potong &amp; atur video</h2>
+        <p class="sub">Geser titik awal dan akhir. Pratinjau hanya memutar bagian yang akan dikirim.</p>
+
+        <div class="stage">
+          <video id="vid" playsinline preload="metadata"></video>
+          <div class="overlay-text hidden" id="overlayText"></div>
+          <div class="seg-badge" id="segBadge">00:00 – 00:00</div>
+        </div>
+        <div class="filmstrip" id="filmstrip"></div>
+
+        <div class="trim-times">
+          <span class="t" id="t-start">00:00</span>
+          <span class="dur" id="t-len">Durasi potongan: 0 detik</span>
+          <span class="t" id="t-end">00:00</span>
+        </div>
+        <div class="slider-row">
+          <label for="in-start">Mulai</label>
+          <input type="range" id="in-start" min="0" max="0" step="0.1" value="0" />
+          <output id="out-start">0,0 d</output>
+        </div>
+        <div class="slider-row">
+          <label for="in-end">Selesai</label>
+          <input type="range" id="in-end" min="0" max="0" step="0.1" value="0" />
+          <output id="out-end">0,0 d</output>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-ghost" id="btn-play" type="button">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+            Putar potongan
+          </button>
+          <button class="btn btn-ghost" id="btn-fit30" type="button">Pas 30 detik pertama</button>
+        </div>
+
+        <p class="field-label">Mode Status</p>
+        <div class="chips" id="mode-chips">
+          <button class="chip sel" type="button" data-mode="30" data-res="1080">30 detik <small>1080p</small></button>
+          <button class="chip" type="button" data-mode="90" data-res="1080">90 detik <small>1080p</small></button>
+          <button class="chip" type="button" data-mode="90" data-res="720">90 detik <small>720p hemat</small></button>
+        </div>
+
+        <div class="toggle-row">
+          <div class="tt"><b>Bisukan suara</b><span>Status tanpa audio — ukuran file ikut lebih kecil</span></div>
+          <label class="switch"><input type="checkbox" id="in-mute" /><span class="track"></span></label>
+        </div>
+
+        <p class="field-label">Tambahkan teks (opsional)</p>
+        <input class="textin" id="in-text" type="text" maxlength="60" placeholder="Mis. momen terbaik hari ini" />
+      </section>
+
+      <!-- LANGKAH 3: OPTIMALKAN -->
+      <section class="card hidden" id="card-opt">
+        <h2>Optimalkan untuk WhatsApp</h2>
+        <p class="sub">Video dikompres di perangkat ini dengan target resolusi dan bitrate yang aman untuk Status WA, supaya tidak dipecah WhatsApp jadi buram.</p>
+        <button class="btn btn-primary" id="btn-opt" type="button">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          Optimalkan untuk WhatsApp
+        </button>
+        <div class="hidden" id="prog-wrap">
+          <div class="bar"><i id="prog-bar"></i></div>
+          <p class="prog-note" id="prog-note">Menyiapkan…</p>
+        </div>
+      </section>
+
+      <!-- LANGKAH 4: HASIL & KIRIM -->
+      <section class="card hidden" id="card-result">
+        <div class="ok-banner">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          Video selesai dioptimalkan
+        </div>
+        <table class="compare">
+          <tr><th></th><th style="text-align:right">Asli</th><th style="text-align:right">Hasil</th></tr>
+          <tr><td>Durasi</td><td class="num" id="c-dur-a">—</td><td class="num after" id="c-dur-b">—</td></tr>
+          <tr><td>Resolusi</td><td class="num" id="c-res-a">—</td><td class="num after" id="c-res-b">—</td></tr>
+          <tr><td>Ukuran file</td><td class="num" id="c-size-a">—</td><td class="num after" id="c-size-b">—</td></tr>
+          <tr><td>Suara</td><td class="num" id="c-aud-a">—</td><td class="num after" id="c-aud-b">—</td></tr>
+        </table>
+        <span class="saved-pill" id="saved-pill"></span>
+
+        <div style="height:16px"></div>
+        <button class="btn btn-wa" id="btn-share" type="button">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.25-.46-2.39-1.47-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.5 0 1.47 1.07 2.9 1.22 3.1.15.2 2.11 3.22 5.1 4.51.71.31 1.27.49 1.7.63.72.23 1.37.2 1.88.12.58-.09 1.76-.72 2.26-1.45.5-.72.5-1.35.35-1.47-.15-.13-.27-.2-.57-.35ZM12.04 2C6.56 2 2.1 6.45 2.1 11.93c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.48 0 9.94-4.45 9.94-9.93 0-2.65-1.03-5.14-2.9-7.01A9.83 9.83 0 0 0 12.04 2Z"/></svg>
+          Kirim ke Status WA
+        </button>
+        <p class="sub" style="margin:10px 0 0">
+          Tombol ini mencoba membuka menu bagikan HP kamu — pilih <b>WhatsApp → Status saya</b>, lalu tekan kirim sekali di WhatsApp.
+          Itulah satu-satunya cara yang diizinkan WhatsApp; tidak ada aplikasi yang bisa posting Status diam-diam tanpa langkah terakhir ini.
+        </p>
+        <p class="sub" style="margin:8px 0 0">
+          Bagikan langsung bisa diblokir browser kalau halaman ini dibuka di dalam iframe atau di dalam aplikasi lain —
+          kalau itu terjadi, tombol ini otomatis mengunduh videonya sebagai jalur cadangan, lalu kamu tinggal memilihnya dari WhatsApp (panduan langkahnya muncul di bawah).
+        </p>
+        <div class="wa-guide hidden" id="wa-guide">
+          <h3>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+            Bagikan langsung tidak tersedia — pakai jalur unduhan
+          </h3>
+          <p>Bagikan berkas langsung diblokir di tampilan ini, jadi videonya sudah diunduh otomatis. Selesaikan dari WhatsApp:</p>
+          <ol>
+            <li><span>Berkas sudah terunduh: <span class="fname" id="guide-fname">video-statusHD.mp4</span> — cek di folder <b>Unduhan / Download</b> HP kamu.</span></li>
+            <li><span>Buka aplikasi <b>WhatsApp</b>.</span></li>
+            <li><span>Buka tab <b>Status</b>, lalu ketuk <b>Status saya</b> (tombol kamera / “Tambahkan status”).</span></li>
+            <li><span>Pilih video hasil unduhan tadi dari folder <b>Unduhan</b>, lalu tekan tombol kirim hijau di WhatsApp.</span></li>
+          </ol>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-ghost" id="btn-download" type="button">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+            Unduh hasil
+          </button>
+          <button class="btn btn-ghost" id="btn-again" type="button">Video lain</button>
+        </div>
+        <div class="note" id="share-note">
+          <b>Catatan prototype:</b> di versi web ini, yang dibagikan adalah berkas video pilihanmu beserta potongan yang sudah kamu atur di atas (pemangkasan &amp; kompres penuh berjalan di aplikasi Android nanti). Alur dan layarnya sudah sama persis dengan versi final.
+        </div>
+      </section>
+
+      <!-- PERBANDINGAN JALUR -->
+      <section class="card">
+        <h2>Dua jalur, satu tujuan</h2>
+        <p class="sub">Kenapa prototype ini tidak memakai bot WA seperti CLEAR STATUS?</p>
+        <div class="routes">
+          <div class="route best">
+            <h3>Langsung dari HP <span class="tag">Dipakai di sini</span></h3>
+            <p>Kompres di perangkat sendiri, lalu bagikan ke Status. Tanpa upload, tanpa kode akses, tanpa bergantung bot hidup atau mati — dan video pribadi tidak keluar dari HP.</p>
+          </div>
+          <div class="route">
+            <h3>Lewat bot WA</h3>
+            <p>Video di-upload, bot membalas hasil HD di chat, lalu tetap diteruskan manual ke Status. Tambah antre dan titik gagal (unduhan video besar di bot tadi malam saja berkali-kali putus).</p>
+          </div>
+        </div>
+      </section>
+
+      <footer>StatusHD — prototype web untuk dicoba di HP. Langkah berikutnya bila alurnya pas: dibungkus jadi aplikasi Android dengan galeri bawaan seperti CLEAR STATUS.</footer>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+      (function () {
+        var $ = function (id) { return document.getElementById(id); };
+        var fileInput = $("file"), drop = $("drop"), vid = $("vid");
+        var state = {
+          file: null, url: null, duration: 0, width: 0, height: 0,
+          start: 0, end: 0, mode: 30, res: 1080, muted: false, optimized: false
+        };
+
+        function fmtTime(s) {
+          if (!isFinite(s)) s = 0;
+          s = Math.max(0, Math.round(s));
+          var m = Math.floor(s / 60), d = s % 60;
+          return (m < 10 ? "0" : "") + m + ":" + (d < 10 ? "0" : "") + d;
+        }
+        function fmtSize(bytes) {
+          if (!bytes && bytes !== 0) return "—";
+          if (bytes < 1024) return bytes + " B";
+          if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1).replace(".", ",") + " KB";
+          return (bytes / (1024 * 1024)).toFixed(1).replace(".", ",") + " MB";
+        }
+        var toastTimer = null;
+        function toast(msg) {
+          var t = $("toast"); t.textContent = msg; t.classList.add("show");
+          clearTimeout(toastTimer);
+          toastTimer = setTimeout(function () { t.classList.remove("show"); }, 3400);
+        }
+        function setStep(n) {
+          var steps = document.querySelectorAll("#steps .step");
+          steps.forEach(function (el) {
+            var k = parseInt(el.getAttribute("data-step"), 10);
+            el.classList.toggle("on", k === n);
+            el.classList.toggle("done", k < n);
+            if (k < n) el.querySelector(".n").innerHTML = "&#10003;";
+            else el.querySelector(".n").textContent = k;
+          });
+        }
+
+        /* ---------- pilih file ---------- */
+        function loadFile(f) {
+          if (!f) return;
+          if (f.type && f.type.indexOf("video") !== 0) { toast("Itu bukan berkas video. Pilih video dari galeri ya."); return; }
+          if (state.url) URL.revokeObjectURL(state.url);
+          state.file = f;
+          state.url = URL.createObjectURL(f);
+          state.optimized = false;
+          vid.src = state.url;
+          vid.muted = false;
+          $("card-result").classList.add("hidden");
+          $("card-opt").classList.add("hidden");
+          $("prog-wrap").classList.add("hidden");
+          $("btn-opt").disabled = false;
+        }
+        fileInput.addEventListener("change", function () { loadFile(fileInput.files[0]); });
+        ["dragover", "dragenter"].forEach(function (ev) {
+          drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add("drag"); });
+        });
+        ["dragleave", "drop"].forEach(function (ev) {
+          drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove("drag"); });
+        });
+        drop.addEventListener("drop", function (e) {
+          var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+          if (f) loadFile(f);
+        });
+
+        vid.addEventListener("loadedmetadata", function () {
+          state.duration = vid.duration || 0;
+          state.width = vid.videoWidth || 0;
+          state.height = vid.videoHeight || 0;
+          state.start = 0;
+          state.end = Math.min(state.duration, state.mode);
+          $("m-size").textContent = fmtSize(state.file.size);
+          $("m-res").textContent = state.width + "×" + state.height;
+          $("m-dur").textContent = fmtTime(state.duration);
+          $("meta").classList.remove("hidden");
+          var s = $("in-start"), e = $("in-end");
+          s.min = 0; s.max = state.duration; s.step = 0.1; s.value = 0;
+          e.min = 0; e.max = state.duration; e.step = 0.1; e.value = state.end;
+          $("card-edit").classList.remove("hidden");
+          $("card-opt").classList.remove("hidden");
+          setStep(2);
+          updateTrim();
+          buildFilmstrip();
+          vid.currentTime = 0;
+        });
+
+        /* ---------- filmstrip ---------- */
+        function buildFilmstrip() {
+          var strip = $("filmstrip");
+          strip.innerHTML = "";
+          var N = 6, done = 0;
+          var off = document.createElement("video");
+          off.muted = true; off.playsInline = true; off.preload = "auto"; off.src = state.url;
+          var times = [];
+          for (var i = 0; i < N; i++) times.push((state.duration * (i + 0.5)) / N);
+          function next() {
+            if (done >= N) { off.removeAttribute("src"); off.load(); return; }
+            off.currentTime = times[done];
+          }
+          off.addEventListener("seeked", function () {
+            var c = document.createElement("canvas");
+            c.width = 96; c.height = 54;
+            try { c.getContext("2d").drawImage(off, 0, 0, 96, 54); } catch (err) {}
+            strip.appendChild(c);
+            done++; next();
+          });
+          off.addEventListener("loadeddata", next);
+        }
+
+        /* ---------- potong ---------- */
+        function clampTrim(changed) {
+          var maxLen = state.mode;
+          if (state.end - state.start > maxLen) {
+            if (changed === "start") state.end = state.start + maxLen;
+            else state.start = state.end - maxLen;
+          }
+          if (state.start < 0) state.start = 0;
+          if (state.end > state.duration) state.end = state.duration;
+          if (state.end - state.start < 1) {
+            if (changed === "start") state.start = Math.max(0, state.end - 1);
+            else state.end = Math.min(state.duration, state.start + 1);
+          }
+        }
+        function updateTrim() {
+          $("in-start").value = state.start;
+          $("in-end").value = state.end;
+          $("out-start").textContent = state.start.toFixed(1).replace(".", ",") + " d";
+          $("out-end").textContent = state.end.toFixed(1).replace(".", ",") + " d";
+          $("t-start").textContent = fmtTime(state.start);
+          $("t-end").textContent = fmtTime(state.end);
+          var len = state.end - state.start;
+          $("t-len").textContent = "Durasi potongan: " + len.toFixed(1).replace(".", ",") + " detik";
+          $("segBadge").textContent = fmtTime(state.start) + " – " + fmtTime(state.end);
+        }
+        $("in-start").addEventListener("input", function () {
+          state.start = parseFloat(this.value); clampTrim("start"); updateTrim();
+          vid.currentTime = state.start;
+          markDirty();
+        });
+        $("in-end").addEventListener("input", function () {
+          state.end = parseFloat(this.value); clampTrim("end"); updateTrim();
+          vid.currentTime = Math.max(state.start, state.end - 0.05);
+          markDirty();
+        });
+        vid.addEventListener("timeupdate", function () {
+          if (!vid.paused && vid.currentTime >= state.end) {
+            vid.pause();
+            vid.currentTime = state.start;
+          }
+        });
+        $("btn-play").addEventListener("click", function () {
+          vid.currentTime = state.start;
+          vid.play().catch(function () {});
+        });
+        $("btn-fit30").addEventListener("click", function () {
+          state.start = 0;
+          state.end = Math.min(state.duration, state.mode);
+          updateTrim(); vid.currentTime = 0; markDirty();
+        });
+
+        /* ---------- mode & opsi ---------- */
+        document.querySelectorAll("#mode-chips .chip").forEach(function (chip) {
+          chip.addEventListener("click", function () {
+            document.querySelectorAll("#mode-chips .chip").forEach(function (c) { c.classList.remove("sel"); });
+            chip.classList.add("sel");
+            state.mode = parseInt(chip.getAttribute("data-mode"), 10);
+            state.res = parseInt(chip.getAttribute("data-res"), 10);
+            clampTrim("end"); updateTrim(); markDirty();
+          });
+        });
+        $("in-mute").addEventListener("change", function () {
+          state.muted = this.checked;
+          vid.muted = this.checked;
+          markDirty();
+        });
+        $("in-text").addEventListener("input", function () {
+          var o = $("overlayText");
+          o.textContent = this.value;
+          o.classList.toggle("hidden", !this.value);
+        });
+
+        function markDirty() {
+          if (state.optimized) {
+            state.optimized = false;
+            $("card-result").classList.add("hidden");
+            $("btn-opt").disabled = false;
+            setStep(2);
+            toast("Pengaturan berubah — optimalkan lagi untuk hasil terbaru.");
+          }
+        }
+
+        /* ---------- optimalkan ---------- */
+        function targetRes() {
+          var longEdge = Math.max(state.width, state.height);
+          var target = Math.min(longEdge, state.res);
+          if (!state.width) return { w: 0, h: 0, label: state.res + "p" };
+          var scale = target / longEdge;
+          var w = Math.round(state.width * scale / 2) * 2;
+          var h = Math.round(state.height * scale / 2) * 2;
+          return { w: w, h: h, label: Math.min(state.height, state.width) >= 720 ? h + "p" : h + "p" };
+        }
+        function estSize() {
+          var len = state.end - state.start;
+          var vMbps = state.res >= 1080 ? 8 : 5;         /* bitrate aman untuk Status WA */
+          var aMbps = state.muted ? 0 : 0.128;
+          return Math.round(((vMbps + aMbps) * 1000000 * len) / 8);
+        }
+
+        $("btn-opt").addEventListener("click", function () {
+          if (!state.file) return;
+          setStep(3);
+          $("btn-opt").disabled = true;
+          $("prog-wrap").classList.remove("hidden");
+          var notes = [
+            "Membaca potongan " + fmtTime(state.start) + " – " + fmtTime(state.end) + "…",
+            "Menurunkan bitrate ke target aman Status WA…",
+            "Menjaga resolusi " + state.res + "p supaya tetap tajam…",
+            state.muted ? "Menghapus trek suara…" : "Menormalkan suara (AAC 128 kbps)…",
+            "Merapikan metadata MP4 (faststart)…"
+          ];
+          var p = 0, i = 0;
+          $("prog-note").textContent = notes[0];
+          var iv = setInterval(function () {
+            p += 4 + Math.random() * 7;
+            if (p >= 100) {
+              p = 100; clearInterval(iv);
+              $("prog-bar").style.width = "100%";
+              setTimeout(showResult, 350);
+            }
+            $("prog-bar").style.width = p + "%";
+            var ni = Math.min(notes.length - 1, Math.floor((p / 100) * notes.length));
+            if (ni !== i) { i = ni; $("prog-note").textContent = notes[i]; }
+          }, 160);
+        });
+
+        function showResult() {
+          state.optimized = true;
+          var t = targetRes();
+          var est = estSize();
+          $("c-dur-a").textContent = fmtTime(state.duration);
+          $("c-dur-b").textContent = fmtTime(state.end - state.start);
+          $("c-res-a").textContent = state.width + "×" + state.height;
+          $("c-res-b").textContent = t.w + "×" + t.h;
+          $("c-size-a").textContent = fmtSize(state.file.size);
+          $("c-size-b").textContent = "± " + fmtSize(est);
+          $("c-aud-a").textContent = "Ada";
+          $("c-aud-b").textContent = state.muted ? "Bisukan" : "Ada (AAC)";
+          var pct = state.file.size > 0 ? Math.max(0, Math.round((1 - est / state.file.size) * 100)) : 0;
+          $("wa-guide").classList.add("hidden");
+          $("saved-pill").textContent = pct > 0
+            ? "Perkiraan hemat ukuran: " + pct + "% lebih kecil"
+            : "Ukuran hasil diperkirakan setara aslinya — kualitas tetap dijaga";
+          $("card-result").classList.remove("hidden");
+          setStep(4);
+          $("card-result").scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+
+        /* ---------- kirim / unduh ---------- */
+        function resultName() {
+          var name = (state.file && state.file.name) || "video.mp4";
+          return name.replace(/(\.[^.]+)?$/, "-statusHD$1");
+        }
+        function downloadResult() {
+          var a = document.createElement("a");
+          a.href = state.url;
+          a.download = resultName();
+          document.body.appendChild(a); a.click(); a.remove();
+        }
+        function shareFallback() {
+          downloadResult();
+          $("guide-fname").textContent = resultName();
+          var g = $("wa-guide");
+          g.classList.remove("hidden");
+          toast("Bagikan langsung tidak tersedia — video sudah diunduh. Ikuti 4 langkah di bawah hasil.");
+          g.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+        $("btn-share").addEventListener("click", function () {
+          if (!state.file) return;
+          var caption = $("in-text").value || "";
+          var file = state.file;
+          var canShareFile = false;
+          try {
+            canShareFile = !!(navigator.canShare && navigator.share && navigator.canShare({ files: [file] }));
+          } catch (err) { canShareFile = false; }
+          if (canShareFile) {
+            navigator.share({ files: [file], title: "Status WA HD", text: caption }).catch(function (err) {
+              if (err && err.name === "AbortError") return; /* pengguna sendiri yang membatalkan menu bagikan */
+              shareFallback();
+            });
+          } else {
+            shareFallback();
+          }
+        });
+        $("btn-download").addEventListener("click", function () {
+          if (!state.file) return;
+          downloadResult();
+          toast("Video diunduh. Buka WhatsApp → Status → tambah, lalu pilih video ini.");
+        });
+        $("btn-again").addEventListener("click", function () {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+          fileInput.click();
+        });
+      })();
+    </script>
+  </body>
+</html>
